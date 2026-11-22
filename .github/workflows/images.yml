@@ -1,0 +1,29 @@
+name: Publicar imagens do TaskKube
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        componente: [frontend, backend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Autenticar no GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Construir e publicar a imagem do commit
+        env:
+          COMPONENTE: ${{ matrix.componente }}
+        run: |
+          imagem="ghcr.io/${GITHUB_REPOSITORY,,}-$COMPONENTE:$GITHUB_SHA"
+          docker build --tag "$imagem" "$COMPONENTE"
+          docker push "$imagem"

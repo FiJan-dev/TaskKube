@@ -1,1 +1,9 @@
 /cloud-task-manager(Proj1)/
+
+.vagrant/
+node_modules/
+.env
+.env.*
+!.env.example
+/backend/generated/
+/backend/dist/
